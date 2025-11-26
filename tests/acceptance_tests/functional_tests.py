@@ -111,7 +111,7 @@ class FunctionalTests(TestCase):
         self.dsl.confirm_register_deletion()
         self.dsl.confirm_register_deleted() 
     
-        def test_can_edit_register(self):
+    def test_can_edit_register(self):
         self.dsl.ensure_existing_register(name="Old")
         self.dsl.update_existing_register(current_name="Old", new_name="New")
         self.dsl.confirm_register_updated(old_name="Old", new_name="New")
