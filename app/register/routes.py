@@ -185,3 +185,39 @@ def delete(register_id: UUID) -> str | Response:
 
     # Render the confirmation page if GET request or validation fails
     return render_template("register/delete.html", register=register, form=form)
+
+    @bp.route("/<uuid:entry_id>/edit", methods=["GET", "POST"])
+def edit(entry_id: UUID) -> str | Response:
+    """
+    Edit an existing Entry.
+
+    HTTP Methods:
+    - GET: Pre-populate the form with current entry data
+    - POST: Validate and update the entry if the form is valid
+
+    Parameters:
+    - entry_id (UUID): The unique identifier of the Entry to edit
+
+    Returns:
+    - str: Rendered form page if GET or validation fails
+    - Response: Redirect to index on successful edit
+    """
+    # Load the entry or show 404 if it doesn't exist
+    entry: Entry = db.get_or_404(Entry, entry_id)
+    form = EntryForm()
+
+    if request.method == "GET":
+        # Pre-fill the form with current data so user can edit it
+        form.name.data = entry.name
+    elif form.validate_on_submit():
+        # Copy validated form data into the Entry object
+        entry.name = form.name.data
+
+        # Persist changes to the database
+        db.session.commit()
+
+        flash("Successfully updated register", "success")
+        return redirect(url_for("register.index"))
+
+    # Render the form page for GET requests or failed validation
+    return render_template("entry/edit.html", entry=entry, form=form)
