@@ -103,3 +103,16 @@ class Dsl:
         self.driver.confirm_can_view_entry(
             register=self._encode_alias(register), entry_name=self._encode_alias(entry_name)
         )
+
+    def update_existing_entry(self, register=DEFAULT_REGISTER_NAME, entry_name=DEFAULT_ENTRY_NAME):
+        current_entry_alias = self._encode_alias(current_entry)
+        new_entry_alias = self._encode_alias(new_entry)
+        self.driver.update_existing_entry(current_entry_alias, new_entry_alias)
+    
+    def delete_existing_entry(self, register=DEFAULT_REGISTER_NAME, name=DEFAULT_ENTRY_NAME):
+        alias = self._encode_alias(name)
+        self.driver.delete_existing_entry(alias)
+    
+    def delete_empty_register(self, name=""):
+        alias = self._encode_alias(name)
+        self.driver.delete_existing_register(alias)

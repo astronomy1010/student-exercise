@@ -193,3 +193,30 @@ class Driver:
         self._navigate_to_registers()
         self._view_register(register)
         self._view_entry(entry_name)
+
+    def update_existing_entry(self, register, entry_name):
+        self._navigate_to_registers()
+        self._view_register(register)
+        self._find_and_click(By.LINK_TEXT, "Edit entry")
+        
+        name_field = self.browser.find_element(By.NAME, "name")
+        assert name_field.get_attribute("value") == name
+
+        name_field.clear()
+        name_field.send_keys(new_name)
+
+        self._find_and_click(By.NAME, "submit")
+    
+    def delete_existing_entry(self, register, entry_name):
+        self._navigate_to_registers()
+        self._view_register(name)
+        self._navigate_to_entry()
+        self._view_entry(name)
+        self._find_and_click(By.LINK_TEXT, "Delete entry")
+    
+    def delete_empty_register(self, register):
+        self._navigate_to_registers()
+        self._view_register(name)
+        if not name:
+            self._find_and_click(By.LINK_TEXT, "Delete register") 
+
