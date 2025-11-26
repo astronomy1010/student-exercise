@@ -207,7 +207,7 @@ class Driver:
 
         self._find_and_click(By.NAME, "submit")
     
-    def delete_existing_entry(self, register, entry_name):
+    def delete_existing_entry(self, register, entry_name, new_entry):
         self._navigate_to_registers()
         self._view_register(name)
         self._navigate_to_entry()

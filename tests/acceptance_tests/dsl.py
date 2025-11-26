@@ -104,7 +104,7 @@ class Dsl:
             register=self._encode_alias(register), entry_name=self._encode_alias(entry_name)
         )
 
-    def update_existing_entry(self, register=DEFAULT_REGISTER_NAME, entry_name=DEFAULT_ENTRY_NAME):
+    def update_existing_entry(self, current_entry=DEFAULT_ENTRY_NAME, new_entry=""):
         current_entry_alias = self._encode_alias(current_entry)
         new_entry_alias = self._encode_alias(new_entry)
         self.driver.update_existing_entry(current_entry_alias, new_entry_alias)
