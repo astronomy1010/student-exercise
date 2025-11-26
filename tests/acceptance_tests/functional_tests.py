@@ -93,9 +93,9 @@ class FunctionalTests(TestCase):
 
     def test_can_edit_entry(self):
         self.dsl.ensure_existing_register(name="Old")
-        self.dsl.ensure_existing_entry(current_entry=DEFAULT_ENTRY_NAME)
-        self.dsl.update_existing_entry(current_entry=DEFAULT_ENTRY_NAME, new_entry="")
-        self.dsl.confirm_entry_updated(old_entry=DEFAULT_ENTRY_NAME, new_entry="")
+        self.dsl.ensure_existing_entry(entry_name="Entry 1")
+        self.dsl.update_existing_entry(entry_name="Entry 1", new_entry="Entry 2")
+        self.dsl.confirm_entry_updated(old_entry="Entry 1", new_entry="Entry 2")
         
     def test_can_delete_entry(self):
         self.dsl.ensure_existing_register()
@@ -111,3 +111,7 @@ class FunctionalTests(TestCase):
         self.dsl.confirm_register_deletion()
         self.dsl.confirm_register_deleted() 
     
+        def test_can_edit_register(self):
+        self.dsl.ensure_existing_register(name="Old")
+        self.dsl.update_existing_register(current_name="Old", new_name="New")
+        self.dsl.confirm_register_updated(old_name="Old", new_name="New")
