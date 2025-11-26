@@ -216,8 +216,8 @@ def edit(entry_id: UUID) -> str | Response:
         # Persist changes to the database
         db.session.commit()
 
-        flash("Successfully updated register", "success")
-        return redirect(url_for("register.index"))
+        flash("Successfully updated entry", "success")
+        return redirect(url_for("entry.index"))
 
     # Render the form page for GET requests or failed validation
     return render_template("entry/edit.html", entry=entry, form=form)
