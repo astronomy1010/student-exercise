@@ -14,12 +14,12 @@ typical CRUD pattern:
 
 from uuid import UUID
 
-from flask import flash, redirect, render_template, url_for
+from flask import flash, redirect, request, render_template, url_for
 from werkzeug import Response
 
 from app import db
 from app.entry import bp
-from app.entry.forms import EntryForm
+from app.entry.forms import EntryDeleteForm, EntryForm
 from app.models import Entry
 
 
@@ -30,7 +30,7 @@ def add(register_id: UUID) -> str | Response:
     # Flask-WTF handles form validation and CSRF protection for us.
     # We don't need to manually check request.form or HTML inputs.
     if form.validate_on_submit():
-        entry = Entry(name=form.name.data, register_id=register_id)
+        entry = Entry(name=form.name.data, register_id=register_id, price=form.price.data)
         db.session.add(entry)
         db.session.commit()
         flash("Successfully added entry to register", "success")
@@ -78,21 +78,54 @@ def edit(register_id: UUID, entry_id: UUID) -> str | Response:
     - Response: Redirect to index on successful edit
     """
     # Load the entry or show 404 if it doesn't exist
-    entry: Entry = db.get_or_404(db.select(Entry).filter_by(register_id=register_id, id=entry_id))
-    form = EntryForm()
+    entry = db.one_or_404(db.select(Entry).filter_by(register_id=register_id, id=entry_id))
+    form = EntryForm(register_id=register_id)
 
     if request.method == "GET":
         # Pre-fill the form with current data so user can edit it
         form.name.data = entry.name
+        form.price.data = entry.price
     elif form.validate_on_submit():
         # Copy validated form data into the Entry object
         entry.name = form.name.data
-
+        entry.price = form.price.data
         # Persist changes to the database
         db.session.commit()
 
         flash("Successfully updated entry", "success")
-        return redirect(url_for("register.entry.index"))
+        return redirect(url_for("register.entry.view", register_id=register_id,entry_id=entry_id))
 
     # Render the form page for GET requests or failed validation
     return render_template("entry/edit.html", entry=entry, form=form)
+
+@bp.route("/<uuid:entry_id>/delete", methods=["GET", "POST"])
+def delete(register_id :UUID, entry_id: UUID) -> str | Response:
+    """
+    Delete an existing Register.
+
+    HTTP Methods:
+    - GET: Show a confirmation page to avoid accidental deletion
+    - POST: Delete the register if confirmation is given
+
+    Parameters:
+    - register_id (UUID): The unique identifier of the Register to delete
+
+    Returns:
+    - str: Rendered confirmation page if GET or validation fails
+    - Response: Redirect to index on successful deletion
+    """
+    # Load the register to delete or return 404 if not found
+    entry = db.one_or_404(db.select(Entry).filter_by(register_id=register_id, id=entry_id))
+
+    form = EntryDeleteForm()
+
+    if form.validate_on_submit():
+        # Remove the register from the database
+        db.session.delete(entry)
+        db.session.commit()
+
+        flash("Successfully deleted entry", "success")
+        return redirect(url_for("register.view", register_id=entry.register_id))
+
+    # Render the confirmation page if GET request or validation fails
+    return render_template("entry/delete.html", entry=entry, form=form)

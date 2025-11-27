@@ -11,9 +11,12 @@
     <h1 class="govuk-heading-l">Add new entry</h1>
     <form method="post" action="{{ url_for('register.entry.add', register_id=form.register_id) }}" novalidate>
         {{ form.csrf_token }}
-        {{ form.name(params={
+        {{ form.name(params=
+          
+          {
             'spellcheck': true
         }) }}
+        {{form.price}}
         <div class="govuk-button-group">
             {{ form.submit(params={
             'preventDoubleClick': true
